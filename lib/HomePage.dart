@@ -10,15 +10,52 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void addTodo() async {
+    // 4-1번
+    final String? title = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) {
+        final bottomInset = MediaQuery.of(ctx).viewInsets.bottom;
+        final controller = TextEditingController();
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 12,
+            bottom: bottomInset,
+          ),
+          child: TextField(
+            controller: controller,
+            autofocus: true,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) {
+              final v = controller.text.trim();
+              if (v.isNotEmpty) Navigator.of(ctx).pop(v);
+            },
+            decoration: const InputDecoration(hintText: '새 할 일'),
+            style: const TextStyle(fontSize: 16),
+          ),
+        );
+      },
+    );
+
+    if (title != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('저장됨: $title')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFCCCCCC),
-      // 3-1번 문제
+      backgroundColor: const Color(0xFFCCCCCC),
+      // 3-1번
       appBar: AppBar(
         title: Text(
           widget.title,
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
       body: SafeArea(
@@ -26,35 +63,37 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 3-2번 문제
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Container(
                 height: 200,
                 width: 400,
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(12),
                   color: Colors.white,
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // 아이콘이 아닌 webp 변환 이미지 100*100 사이즈로 넣어야 함.
-                    // (안드로이드 스튜디오만 가능..?) 일단 패스!
-                    Icon(Icons.file_copy_outlined, size: 70),
-                    SizedBox(height: 12),
-                    Text(
+                    SizedBox(
+                      width: 100,
+                      height: 100,
+                      child: Image.asset('assets/cat.webp', fit: BoxFit.cover),
+                    ),
+                    const SizedBox(height: 12),
+                    const Text(
                       '아직 할 일이 없음',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 12),
+                    const SizedBox(height: 12),
+                    // 3-2번
                     Text(
-                      "할 일은 추가하고 ${widget.title}에서\n할 일을 추적하세요.",
-                      style: TextStyle(fontSize: 14, height: 1.5),
+                      "할 일을 추가하고 ${widget.title}에서\n할 일을 추적하세요.",
+                      style: const TextStyle(fontSize: 14, height: 1.5),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -64,12 +103,12 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      // 3-3번 문제
+      // 3-3번
       floatingActionButton: FloatingActionButton(
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         backgroundColor: Colors.red,
-        child: Icon(Icons.add),
-        onPressed: () {},
+        child: const Icon(Icons.add, color: Colors.white, size: 24),
+        onPressed: addTodo,
       ),
     );
   }
